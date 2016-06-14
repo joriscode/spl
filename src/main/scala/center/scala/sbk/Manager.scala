@@ -7,13 +7,13 @@ import encodings.`UTF-8`._
 
 object Manager {
   val dir = Spl.splDir / ".manager"
-  val file = dir / "launcher.sh"
+  val file = dir / Spl.toolName
   val repoDir = dir / "repo"
 
   def bootstrap() = {
     if (! repoDir.exists) throw new Exception(s"To be installed, the tool should be located in $repoDir")
 
-    val binaryDir = "usr/local/bin"
+    val binaryDir = "/usr/local/bin"
     val symFile = Helper.pathToFs(binaryDir)/ Spl.toolName
     if (symFile.exists) throw new Exception(s"The command ${Spl.toolName} already exists")
 
