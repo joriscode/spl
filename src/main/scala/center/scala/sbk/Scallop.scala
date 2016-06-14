@@ -70,16 +70,24 @@ object Scallop {
       mutuallyExclusive(add, remove, list)
     }
 
+    val manager = new Subcommand("manager") {
+      val bootstrap = opt[BootStrapManager](descr = "Bootstrap for initial installation")
+      val update = opt[UpdateManager](descr = "Update the manager")
+      requireOne(bootstrap, update)
+      mutuallyExclusive(bootstrap, update)
+    }
+
     /* overwrite help */
     val help = opt[Boolean](descr = "Help")
 
-    addSubcommand(list)
     addSubcommand(fetch)
-    addSubcommand(unpack)
     addSubcommand(install)
-    addSubcommand(update)
-    addSubcommand(uninstall)
+    addSubcommand(list)
+    addSubcommand(manager)
     addSubcommand(source)
+    addSubcommand(uninstall)
+    addSubcommand(unpack)
+    addSubcommand(update)
 
 
     override def onError(e: Throwable): Unit = e match {
@@ -149,6 +157,32 @@ object Scallop {
     val argType = org.rogach.scallop.ArgType.LIST
   }
 
+  implicit val bootStrapManagerConverter = new ValueConverter[BootStrapManager] {
+    def parse(s: List[(String, List[String])]): Either[String, Option[BootStrapManager]] = {
+      s match {
+        case (_, _) :: Nil => Right(Some(BootStrapManager()))
+        case Nil => Right(None)
+        case _ => Left("boostrap manager parser error")
+      }
+    }
+
+    val tag = scala.reflect.runtime.universe.typeTag[BootStrapManager]
+    val argType = org.rogach.scallop.ArgType.LIST
+  }
+
+  implicit val updateManagerConverter = new ValueConverter[UpdateManager] {
+    def parse(s: List[(String, List[String])]): Either[String, Option[UpdateManager]] = {
+      s match {
+        case (_, _) :: Nil => Right(Some(UpdateManager()))
+        case Nil => Right(None)
+        case _ => Left("boostrap manager parser error")
+      }
+    }
+
+    val tag = scala.reflect.runtime.universe.typeTag[UpdateManager]
+    val argType = org.rogach.scallop.ArgType.LIST
+  }
+
 
   def whichCommand(args: Seq[String]): Command = {
     val conf = new Conf(args)
@@ -163,6 +197,17 @@ object Scallop {
 
     } else {
       conf.subcommand match {
+        case Some(conf.manager) =>
+          if (conf.manager.bootstrap.supplied) {
+            conf.manager.bootstrap.get.get
+
+          } else if (conf.manager.update.supplied) {
+            conf.manager.update.get.get
+
+          } else {
+            Error("The given manager command does not exist. See --help")
+          }
+
         case Some(conf.list) =>
           ListProject()
         //if (conf.list)

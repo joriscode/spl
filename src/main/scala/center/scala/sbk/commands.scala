@@ -6,6 +6,14 @@ sealed trait Command {
   def exec(): Unit
 }
 
+case class BootStrapManager() extends Command {
+  override def exec(): Unit = Manager.bootstrap()
+}
+
+case class UpdateManager() extends Command {
+  override def exec(): Unit = Manager.update()
+}
+
 case class InstallProject(arg: (String, Option[String]), allReleases: Boolean = false) extends Command {
   override def exec(): Unit = arg._2 match {
     case None => Formula.install(arg._1, allReleases)
@@ -85,7 +93,7 @@ case class H(command: Option[String] = None) extends Command {
 
   def globalHelp(): String = {
     //|Usage: sbk [--version] [--help] [--noEnhencement] <command> [<args>]
-    s"""v0.2 - (c) Apache Licence v2
+    s"""v${Spl.toolVersion} - (c) Apache Licence v2
         |
         |  -n, --no-enhancement   Disable display enhancement
         |  -h, --help             Show help message
@@ -118,17 +126,14 @@ case class H(command: Option[String] = None) extends Command {
         |    ${Spl.toolName} uninstall <formula>
         |    ${Spl.toolName} uninstall <github-organisation> <github-repository>
         |
-        |
-        |Command: pool - Registration of Github pools
+        |Command: manager - Manage this tool
         |  Usage:
-        |    ${Spl.toolName} pool [option]
+        |    ${Spl.toolName} manage [option]
         |
         |  Options:
-        |    -a, --add  <alias> <org> <repo> <token>*                   Register a pool
-        |    -c, --change-token  <poolAlias> <token>                    Change the oAuth2 token of the pool
-        |    -r, --remove  <poolAlias>                                  Unregister a pool
-        |    -d, --download  <poolAlias> <path-to-file-on-the-repo>     Download a script from a pool
-        |    -u, --upload  <scriptAlias> <poolAlias>                    Upload a registered script to the user's pool
+        |    -b, --bootstrap    Unpack the project of this tool.
+        |                       The project must have been cloned in ${Spl.splDir}/.manager/
+        |    -u, --update       Update this tool
        """.stripMargin
   }
 
