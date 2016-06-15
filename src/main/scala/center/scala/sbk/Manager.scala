@@ -17,7 +17,8 @@ object Manager {
     val symFile = Helper.pathToFs(binaryDir)/ Spl.toolName
     if (symFile.exists) throw new Exception(s"The command ${Spl.toolName} already exists")
 
-    val content = "#! /bin/sh\n" + "cd " + Helper.fsToPath(repoDir) + "\n" + "CMD=\"" + "run" + " $@\"\n" + "sbt $CMD"
+    val content = "#! /bin/sh\n" + "cd " + Helper.fsToPath(repoDir) + "\n" + "CMD=\"" + "" + " $@\"\n" + "java -jar ./target/scala-2.11/Spl-assembly-1.0.0.jar $CMD"
+    //val content = "#! /bin/sh\n" + "cd " + Helper.fsToPath(repoDir) + "\n" + "CMD=\"" + "run" + " $@\"\n" + "sbt $CMD"
     content.copyTo(file)
 
     val cmd = Seq("install", "-S", Helper.fsToPath(file), binaryDir)
