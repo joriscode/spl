@@ -16,6 +16,4 @@ lazy val projects = (project in file("."))
     libraryDependencies ++= Settings.dependencies.value
   )
 
-//assemblyMergeStrategy in assembly := {
-//  case PathList("javax", "servlet", xs@_*) => MergeStrategy.first
-//}
+assemblyJarName in assembly := "spl.jar"
