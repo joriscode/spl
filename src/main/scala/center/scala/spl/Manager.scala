@@ -7,6 +7,7 @@ object Manager {
   val repoDir = dir / "repo"
 
   def bootstrap() = {
+    Prompt.info("Start bootstrapping")
     if (! repoDir.exists) throw new Exception(s"To be installed, the tool should be located in $repoDir")
 
     if (! generateScript()) throw new Exception(s"Could not create the launcher script")
@@ -22,6 +23,7 @@ object Manager {
   }
 
   private def generateScript(): Boolean = {
+    Prompt.info("Generate launcher script")
     Cli.exec(Helper.fsToPath(repoDir), Seq("sbt", "stage"))
   }
 
