@@ -1,6 +1,6 @@
-package center.scala.sbk
+package center.scala.spl
 
-import center.scala.sbk.Git.Repo
+import center.scala.spl.Git.Repo
 
 sealed trait Command {
   def exec(): Unit

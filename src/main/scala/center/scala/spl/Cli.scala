@@ -1,4 +1,4 @@
-package center.scala.sbk
+package center.scala.spl
 
 /**
   * Command Line Interpreter: allows to execute bash commands

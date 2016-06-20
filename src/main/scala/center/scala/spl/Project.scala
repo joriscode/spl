@@ -1,6 +1,6 @@
-package center.scala.sbk
+package center.scala.spl
 
-import center.scala.sbk.Git.{Repo, RepoInfo}
+import center.scala.spl.Git.{Repo, RepoInfo}
 import rapture.uri._
 import rapture.io._
 import rapture.codec._
@@ -71,7 +71,7 @@ object Project {
       * Tries to create the commands from the downloaded repository
       */
     def unpack() = {
-      /**
+      /*
         * Creates a Unix command
         *
         * @param file     the file to symlink
@@ -160,7 +160,7 @@ object Project {
         case None => throw new Exception(s"Could not find locally the repository $repo")
       }
 
-      /** Tag name of the latest release or None */
+      /* Tag name of the latest release or None */
       val latestTag = repo.latestRelease(allReleases).map(_.tag_name)
       if (latestTag.isEmpty) Prompt.warn("This repository has no tagged release")
 
@@ -214,6 +214,7 @@ object Project {
 
   /**
     * Content of the listing file
+ *
     * @param id the Github repository id
     * @param url the Github repository url
     * @param latest the latest release tag if defined

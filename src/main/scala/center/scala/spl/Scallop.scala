@@ -1,6 +1,6 @@
-package center.scala.sbk
+package center.scala.spl
 
-import center.scala.sbk.Git.Repo
+import center.scala.spl.Git.Repo
 import org.rogach.scallop._
 import org.rogach.scallop.exceptions._
 

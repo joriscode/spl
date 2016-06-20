@@ -1,6 +1,6 @@
-package center.scala.sbk
+package center.scala.spl
 
-import center.scala.sbk.Git.Repo
+import center.scala.spl.Git.Repo
 import rapture.codec._
 import encodings.`UTF-8`._
 import rapture.io._

@@ -17,3 +17,6 @@ lazy val projects = (project in file("."))
   )
 
 assemblyJarName in assembly := "spl.jar"
+
+enablePlugins(JavaAppPackaging)
+mainClass in Compile := Some("center.scala.spl.Main")

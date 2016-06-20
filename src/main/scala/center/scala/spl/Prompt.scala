@@ -1,4 +1,4 @@
-package center.scala.sbk
+package center.scala.spl
 
 object Prompt {
   // for interactive shell

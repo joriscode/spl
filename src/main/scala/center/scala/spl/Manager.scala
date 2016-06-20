@@ -1,4 +1,4 @@
-package center.scala.sbk
+package center.scala.spl
 
 import rapture.uri._
 import rapture.io._
