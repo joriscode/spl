@@ -1,27 +1,28 @@
 package center.scala.spl
 
 import rapture.uri._
-import rapture.io._
-import rapture.codec._
-import encodings.`UTF-8`._
 
 object Manager {
   val dir = Spl.splDir / ".manager"
-  val file = dir / Spl.toolName
   val repoDir = dir / "repo"
 
   def bootstrap() = {
     if (! repoDir.exists) throw new Exception(s"To be installed, the tool should be located in $repoDir")
 
+    if (! generateScript()) throw new Exception(s"Could not create the launcher script")
+
     val binaryDir = "/usr/local/bin"
     val symFile = Helper.pathToFs(binaryDir)/ Spl.toolName
     if (symFile.exists) throw new Exception(s"The command ${Spl.toolName} already exists")
 
-    val content = "#! /bin/sh\n" + "cd " + Helper.fsToPath(repoDir) + "\n" + "CMD=\"$@\"\n" + "java -jar ./target/scala-2.11/spl.jar $CMD"
-    content.copyTo(file)
 
+    val file = repoDir / "target" / "universal" / "stage"/ "bin" / "spl"
     val cmd = Seq("install", "-S", Helper.fsToPath(file), binaryDir)
     if (!Cli.exec(".", cmd)) throw new Exception(s"Could not create the command ${file.filename}.")
+  }
+
+  private def generateScript(): Boolean = {
+    Cli.exec(Helper.fsToPath(repoDir), Seq("sbt", "stage"))
   }
 
   def update() = {
