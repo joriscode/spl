@@ -9,6 +9,8 @@ object Manager {
   val dir = Spl.splDir / ".manager"
   val repoDir = dir / "repo"
   val file = dir / Spl.toolName
+  val binaryDir = "/usr/local/bin"
+  val symFile = Helper.pathToFs(binaryDir)/ Spl.toolName
 
   def bootstrap() = {
     Prompt.info("Start bootstrapping")
@@ -16,8 +18,6 @@ object Manager {
 
     if (! generateScript()) throw new Exception(s"Could not create the launcher script")
 
-    val binaryDir = "/usr/local/bin"
-    val symFile = Helper.pathToFs(binaryDir)/ Spl.toolName
     if (symFile.exists) throw new Exception(s"The command ${Spl.toolName} already exists")
 
     val content = "#! /bin/sh\n" + "cd " + Helper.fsToPath(repoDir) + "\n" + "CMD=\"$@\"\n" + "java -jar ./target/scala-2.11/spl.jar $CMD"
@@ -36,10 +36,19 @@ object Manager {
   def update() = {
     if (! repoDir.exists) throw new Exception(s"To be installed, the tool should be located in $repoDir")
 
+    Prompt.info(s"Update ${Spl.toolName} source code")
+    Cli.exec(Helper.fsToPath(repoDir), Seq("git", "pull"))
+
+    // Delete the symlink that creates the command
+    symFile.delete()
+
+    Prompt.warn(s"Run the following command to update the launcher of ${Spl.toolName}")
+    Prompt.warn("cd ~/.spl/.manager/repo/ && sbt \"run --bootstrap\"")
+
     // TODO implement. We can assume than master will only contain tagged releases and not in development commits
-    Prompt.warn("Not implemented yet")
-    Prompt.info("Execute the commands:")
-    Prompt.info(s"cd $repoDir")
-    Prompt.info("git pull origin master")
+    //Prompt.warn("Not implemented yet")
+    //Prompt.info("Execute the commands:")
+    //Prompt.info(s"cd $repoDir")
+    //Prompt.info("git pull origin master")
   }
 }
