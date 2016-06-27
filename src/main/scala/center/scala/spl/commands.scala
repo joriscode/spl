@@ -108,6 +108,8 @@ case class H(command: Option[String] = None) extends Command {
         |    ${Spl.toolName} fetch <formula>
         |      A formula is a Github repository registered on ${Formula.centralRepo}
         |    ${Spl.toolName} fetch <github-organisation> <github-repository>
+        |  Options:
+        |    -a, --allReleases accept draft and pre-releases besides releases
         |
         |Command: unpack - Install a project that has been fetched
         |  Usage:
@@ -120,11 +122,21 @@ case class H(command: Option[String] = None) extends Command {
         |    ${Spl.toolName} install <formula>
         |      A formula is a Github repository registered on ${Formula.centralRepo}
         |    ${Spl.toolName} install <github-organisation> <github-repository>
+        |  Options:
+        |    -a, --allReleases accept draft and pre-releases besides releases
         |
         |Command: uninstall - Uninstall a project
         |  Usage:
         |    ${Spl.toolName} uninstall <formula>
         |    ${Spl.toolName} uninstall <github-organisation> <github-repository>
+        |
+        |Command: update - Update a project
+        |  Usage:
+        |    ${Spl.toolName} update <formula>
+        |      A formula is a Github repository registered on ${Formula.centralRepo}
+        |    ${Spl.toolName} update <github-organisation> <github-repository>
+        |  Options:
+        |    -a, --allReleases accept draft and pre-releases besides releases
         |
         |Command: manager - Manage this tool
         |  Usage:
