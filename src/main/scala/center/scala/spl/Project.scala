@@ -9,6 +9,7 @@ import rapture.json._
 import jsonBackends.jawn._
 import rapture.fs.FsUrl
 
+// TODO: FIX: install should set unpack to true in the listing, samfe for unpack if it does not
 
 object Project {
   private val shellsDir = Spl.splDir / "shells"
@@ -67,6 +68,8 @@ object Project {
       runs.flatten.toList
     }
 
+    // TODO ass show shells command, add repack, unfetch commands in Scallop
+
     /**
       * Tries to create the commands from the downloaded repository
       */
@@ -121,12 +124,11 @@ object Project {
       }
     }
 
-
+    // could print message
     /**
-      * Uninstalls a repository
-      *
+      * Reverses unpack: deletes symlinks, deletes scripts and the shell/project directory
       */
-    def uninstall() = {
+    def repack() = {
       val shellDir = compiledDestination
 
       if (shellDir.exists) {
@@ -140,6 +142,13 @@ object Project {
         if (shellDir.exists) Prompt.error(s"Could not delete directory $shellDir. Please do it manually.")
       }
 
+      // TODO should change the status in the listing
+    }
+
+    /**
+      * Reverses fetch: deletes the project source code, remove the project from the listing
+      */
+    def unfetch() = {
       val projectDir = cloneDestination
       if (projectDir.exists) {
         Helper.deleteDir(projectDir)
@@ -147,6 +156,15 @@ object Project {
       }
 
       remove(this)
+    }
+
+    /**
+      * Uninstalls a repository
+      *
+      */
+    def uninstall() = {
+      repack()
+      unfetch()
 
       Prompt.info(s"Uninstalled $repo")
     }
@@ -163,6 +181,7 @@ object Project {
       /* Tag name of the latest release or None */
       val latestTag = repo.latestRelease(allReleases).map(_.tag_name)
       if (latestTag.isEmpty) Prompt.warn("This repository has no tagged release")
+      // TODO change, if empty then print and return
 
       // update
       //if (infoRepo.updated_at > localInfo.updated) { // updated_at corresponds to push only? it doesn't seem to be the last commit date
@@ -244,6 +263,7 @@ object Project {
     }
   }
 
+// what if no file to be read?
   def list() = {
     val data = read()
     if (data.isEmpty) {

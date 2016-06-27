@@ -8,6 +8,9 @@ import scala.language.reflectiveCalls
 
 object Scallop {
 
+  // TODO repack, unfetch
+  // TODO unpack --branch
+
   class Conf(args: Seq[String]) extends ScallopConf(args) {
     //version(s"\nv${Sbk.toolVersion} - (c) Apache Licence v2")
     banner(s"""
