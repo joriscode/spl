@@ -43,7 +43,7 @@ object Manager {
     symFile.delete()
 
     Prompt.warn(s"Run the following command to update the launcher of ${Spl.toolName}")
-    Prompt.warn("cd ~/.spl/.manager/repo/ && sbt \"run --bootstrap\"")
+    Prompt.warn("cd ~/.spl/.manager/repo/ && sbt \"run manager --bootstrap\"")
 
     // TODO implement. We can assume than master will only contain tagged releases and not in development commits
     //Prompt.warn("Not implemented yet")
