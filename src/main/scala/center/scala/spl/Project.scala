@@ -24,8 +24,7 @@ object Project {
   if (!listing.exists) "{}".copyTo(listing)
   if (!listing.exists) throw new Exception(s"Could not create $listing")
 
-  private val binaries = "/usr/local/bin"
-  private val binariesFs = Helper.pathToFs(binaries)
+  private val binariesFs = Helper.pathToFs("/usr/local/bin")
   if (!binariesFs.exists) throw new Exception(s"The directory $binariesFs does not exist")
 
   /**
@@ -78,11 +77,13 @@ object Project {
         * Creates a Unix command
         *
         * @param file     the file to symlink
-        * @param binaries the location of the binaries (/usr/local/bin/)
         */
-      def createSymlink(file: FsUrl, binaries: String) = {
-        val cmd = Seq("install", "-S", Helper.fsToPath(file), binaries)
-        if (!Cli.exec(".", cmd)) throw new Exception(s"Could not create the command ${file.filename}.")
+      def createSymlink(file: FsUrl) = {
+        val dir = Helper.fsToPath(Helper.fsParent(file))
+        val script = Helper.fsToPath(file)
+        val symlink = Helper.fsToPath(binariesFs / file.filename)
+        val ret = Cli.createCommand(dir, script, symlink)
+        if (!ret) throw new Exception(s"Could not create the command ${file.filename}.")
       }
 
       val build = cloneDestination / "build.sbt"
@@ -115,7 +116,7 @@ object Project {
         val symlinkFile = binariesFs / file.filename
         if (!symlinkFile.exists) {
           // Create a symlink between .sbk/shells/org/project/... to /usr/local/bin/...
-          createSymlink(file, binaries)
+          createSymlink(file)
           Prompt.info(s"Created command ${file.filename}")
 
         } else {
