@@ -121,6 +121,9 @@ object Project {
 
         } else {
           Prompt.warn(s"Did not create the command ${file.filename} because it already exists on the system")
+          Prompt.warn(s"Rename ${Helper.fsToPath(file)} and run:")
+          Prompt.warn(s"ln -s <full path to the renamed script> ${Helper.fsToPath(binariesFs)}/<new name>")
+          Prompt.warn(s"chmod 755 ${Helper.fsToPath(binariesFs)}/<new name>")
         }
       }
     }
