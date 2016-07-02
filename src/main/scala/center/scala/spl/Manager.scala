@@ -24,8 +24,11 @@ object Manager {
     content.copyTo(file)
 
 
-    val cmd = Seq("install", "-S", Helper.fsToPath(file), binaryDir)
-    if (!Cli.exec(".", cmd)) throw new Exception(s"Could not create the command ${file.filename}.")
+    val curDirPath = Helper.fsToPath(dir)
+    val filePath = Helper.fsToPath(file)
+    val symFilePath = Helper.fsToPath(symFile)
+
+    if (! Cli.createCommand(curDirPath, filePath, symFilePath)) throw new Exception(s"Could not create the command ${file.filename}.")
   }
 
   private def generateScript(): Boolean = {
