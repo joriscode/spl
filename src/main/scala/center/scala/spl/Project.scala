@@ -100,8 +100,10 @@ object Project {
       }
 
       val dir = Helper.fsToPath(cloneDestination)
+      val sbtArgs = "; set javaOptions += \\\"-Duser.dir=$PWD\\\" ; "
+      val changeDir = "cd " + dir + "\n"
       val shells = cmds.map { cmd =>
-        "#! /bin/sh\n" + "cd " + dir + "\n" + "CMD=\"" + cmd + " $@\"\n" + "sbt \"$CMD\""
+        "#! /bin/sh\n" + "CMD=\"" + sbtArgs + cmd + " $@\"\n" + changeDir + "sbt \"$CMD\""
       }
 
       val filenames = subProjects match {
