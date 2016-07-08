@@ -124,8 +124,9 @@ object Git {
     }
 
     // TODO improve token
-    private val token = "df1ab34df6c3dd5dae4d1fdb5b0e7262371865aa"
-    private val oAuth2 = Map("Authorization" -> ("token " + token.trim)) // TODO does not work Initialization error
+    //private val token = "df1ab34df6c3dd5dae4d1fdb5b0e7262371865aa"
+    //private val oAuth2 = Map("Authorization" -> ("token " + token.trim)) // TODO does not work Initialization error
+    private val oAuth2 = Map("" -> "")
 
     /**
       * Returns the latest release
