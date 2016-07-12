@@ -86,47 +86,67 @@ object Project {
         if (!ret) throw new Exception(s"Could not create the command ${file.filename}.")
       }
 
-      val build = cloneDestination / "build.sbt"
-      if (!build.exists) throw new Exception(s"Could not find the build of the project at $build")
+      val splConf = cloneDestination / "spl.json"
+      if (splConf.exists) { // TODO should make sure that the config file contains information about launching method. A command should permit to skip the usage of spl.json
+        Prompt.warn("Use the spl.json configuration file")
+        case class Launcher(command: String, script: String, name: String)
+        val str = splConf.slurp[Char]
+        val json = Json.parse(str)
+        val launcherConf = json.as[Launcher]
 
-      val shellDir = compiledDestination
-      if (!shellDir.exists) shellDir.mkdir(true)
-      if (!shellDir.exists) throw new Exception(s"Could not create the directory $shellDir")
+        val cc = launcherConf.command
+        val ccPath = Helper.fsToPath(cloneDestination)
+        Prompt.info(s"Execute $cc in $ccPath")
+        Cli.exec(ccPath, cc.split(" ").toSeq)
 
-      val subProjects = readBuild()
-      val cmds = subProjects match {
-        case Nil => List("run")
-        case xs => xs.map(_ + "/run")
-      }
+        val cmd = "#!/bin/sh\n" + "CMD=\"$@\"\n" +  launcherConf.script + " $CMD"
+        val cmdDest = compiledDestination / launcherConf.name
+        cmd.copyTo(cmdDest)
+        createSymlink(cmdDest)
 
-      val dir = Helper.fsToPath(cloneDestination)
-      val sbtArgs = "; set javaOptions += \\\"-Duser.dir=$PWD\\\" ; "
-      val changeDir = "cd " + dir + "\n"
-      val sbtNoOutput = "--error \'set showSuccess := false\' "
-      val shells = cmds.map { cmd =>
-        "#! /bin/sh\n" + "CMD=\"" + sbtArgs + cmd + " $@\"\n" + changeDir + "sbt " + sbtNoOutput + "\"$CMD\""
-      }
+      } else {
+        val build = cloneDestination / "build.sbt"
+        if (!build.exists) throw new Exception(s"Could not find the build of the project at $build")
 
-      val filenames = subProjects match {
-        case Nil => List(repo.toLowerCase)
-        case xs => xs.map(repo.toLowerCase + "-" + _)
-      }
-      val files = filenames.map(shellDir / _)
+        val shellDir = compiledDestination
+        if (!shellDir.exists) shellDir.mkdir(true)
+        if (!shellDir.exists) throw new Exception(s"Could not create the directory $shellDir")
 
-      files.zip(shells).foreach { case (file, shell) =>
-        shell.copyTo(file)
+        val subProjects = readBuild()
+        val cmds = subProjects match {
+          case Nil => List("run")
+          case xs => xs.map(_ + "/run")
+        }
 
-        val symlinkFile = binariesFs / file.filename
-        if (!symlinkFile.exists) {
-          // Create a symlink between .spl/shells/org/project/... to /usr/local/bin/...
-          createSymlink(file)
-          Prompt.info(s"Created command ${file.filename}")
+        val dir = Helper.fsToPath(cloneDestination)
+        val sbtArgs = "; set javaOptions += \\\"-Duser.dir=$PWD\\\" ; "
+        val changeDir = "cd " + dir + "\n"
+        val sbtNoOutput = "--error \'set showSuccess := false\' "
+        val shells = cmds.map { cmd =>
+          "#! /bin/sh\n" + "CMD=\"" + sbtArgs + cmd + " $@\"\n" + changeDir + "sbt " + sbtNoOutput + "\"$CMD\""
+        }
 
-        } else {
-          Prompt.warn(s"Did not create the command ${file.filename} because it already exists on the system")
-          Prompt.warn(s"Rename ${Helper.fsToPath(file)} and run:")
-          Prompt.warn(s"ln -s <full path to the renamed script> ${Helper.fsToPath(binariesFs)}/<new name>")
-          Prompt.warn(s"chmod 755 ${Helper.fsToPath(binariesFs)}/<new name>")
+        val filenames = subProjects match {
+          case Nil => List(repo.toLowerCase)
+          case xs => xs.map(repo.toLowerCase + "-" + _)
+        }
+        val files = filenames.map(shellDir / _)
+
+        files.zip(shells).foreach { case (file, shell) =>
+          shell.copyTo(file)
+
+          val symlinkFile = binariesFs / file.filename
+          if (!symlinkFile.exists) {
+            // Create a symlink between .spl/shells/org/project/... to /usr/local/bin/...
+            createSymlink(file)
+            Prompt.info(s"Created command ${file.filename}")
+
+          } else {
+            Prompt.warn(s"Did not create the command ${file.filename} because it already exists on the system")
+            Prompt.warn(s"Rename ${Helper.fsToPath(file)} and run:")
+            Prompt.warn(s"ln -s <full path to the renamed script> ${Helper.fsToPath(binariesFs)}/<new name>")
+            Prompt.warn(s"chmod 755 ${Helper.fsToPath(binariesFs)}/<new name>")
+          }
         }
       }
     }
@@ -240,7 +260,7 @@ object Project {
 
   /**
     * Content of the listing file
- *
+    *
     * @param id the Github repository id
     * @param url the Github repository url
     * @param latest the latest release tag if defined
@@ -270,7 +290,7 @@ object Project {
     }
   }
 
-// what if no file to be read?
+  // what if no file to be read?
   def list() = {
     val data = read()
     if (data.isEmpty) {
