@@ -118,7 +118,7 @@ object Project {
 
         val symlinkFile = binariesFs / file.filename
         if (!symlinkFile.exists) {
-          // Create a symlink between .sbk/shells/org/project/... to /usr/local/bin/...
+          // Create a symlink between .spl/shells/org/project/... to /usr/local/bin/...
           createSymlink(file)
           Prompt.info(s"Created command ${file.filename}")
 

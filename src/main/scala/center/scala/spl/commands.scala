@@ -92,7 +92,6 @@ case class H(command: Option[String] = None) extends Command {
   }
 
   def globalHelp(): String = {
-    //|Usage: sbk [--version] [--help] [--noEnhencement] <command> [<args>]
     s"""v${Spl.toolVersion} - (c) Apache Licence v2
         |
         |  -n, --no-enhancement   Disable display enhancement

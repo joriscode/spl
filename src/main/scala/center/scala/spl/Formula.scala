@@ -12,7 +12,7 @@ object Formula {
   /**
     * Default central repository for the formulas
     */
-  val centralRepo = Repo("joriscode", "sbk-central")
+  val centralRepo = Repo("joriscode", "spl-central")
 
   /**
     * File listing additional repositories of formulas
