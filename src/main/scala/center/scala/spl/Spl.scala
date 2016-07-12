@@ -9,7 +9,7 @@ import rapture.uri._
 object Spl {
   val splDir = File.homeDir / ".spl"
   val toolName = "spl"
-  val toolVersion = "1.0.0"
+  val toolVersion = "1.0.1"
 
   def checkAccessToFiles(): Unit = {
     if (!splDir.exists) splDir.mkdir()
